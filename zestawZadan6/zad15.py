@@ -1,6 +1,7 @@
-from skimage import io, color, morphology, img_as_ubyte
-import numpy as np
+import cv2
 import matplotlib.pyplot as plt
+import numpy as np
+from skimage import color, img_as_ubyte, io, morphology
 
 
 def zhang_suen_thinning_iteration(image, iteration):
@@ -14,14 +15,14 @@ def zhang_suen_thinning_iteration(image, iteration):
             if image[r, c]:
                 # Extract 3x3 neighborhood
                 P = [
-                    image[r - 1, c],  # P2
-                    image[r - 1, c + 1],  # P3
-                    image[r, c + 1],  # P4
-                    image[r + 1, c + 1],  # P5
-                    image[r + 1, c],  # P6
-                    image[r + 1, c - 1],  # P7
-                    image[r, c - 1],  # P8
-                    image[r - 1, c - 1],  # P9
+                    image[r + 1, c],  # P2
+                    image[r + 1, c - 1],  # P3
+                    image[r, c - 1],  # P4
+                    image[r - 1, c - 1],  # P5
+                    image[r - 1, c],  # P6
+                    image[r - 1, c + 1],  # P7
+                    image[r, c + 1],  # P8
+                    image[r + 1, c + 1],  # P9
                 ]
 
                 transitions = sum((P[i] == 0 and P[(i + 1) % 8]) for i in range(8))
@@ -77,6 +78,7 @@ binary_after_iteration[marker2] = False
 
 skeletonized_image = zhang_suen_thinning(binary_image)
 
+
 # Visualize the results
 plt.figure(figsize=(12, 6))
 plt.subplot(1, 3, 1)
@@ -96,3 +98,9 @@ plt.axis("off")
 
 plt.tight_layout()
 plt.show()
+
+skeletonized_image_uint8 = (skeletonized_image * 255).astype(np.uint8)
+
+output_path = "zestawZadan6/skeletonized_image.png"
+cv2.imwrite(output_path, skeletonized_image_uint8)
+print(f"Skeletonized image saved to {output_path}")
